@@ -2,6 +2,7 @@ package scratch
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -53,7 +54,7 @@ type Userprofile struct {
 }
 
 func GetProject(id string) (*Project, error) {
-	url := "https://scratch.mit.edu/api/v1/project/" + id + "/?format=json"
+	url := "http://scratch.mit.edu/api/v1/project/" + id + "/?format=json"
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -66,6 +67,7 @@ func GetProject(id string) (*Project, error) {
 	p := new(Project)
 	err = json.Unmarshal(body, p)
 	if err != nil {
+		fmt.Println(url, ": ", body)
 		return nil, err
 	}
 	return p, nil
@@ -73,7 +75,7 @@ func GetProject(id string) (*Project, error) {
 
 func GetProjects(tag string) ([]*Project, error) {
 
-	url := "https://scratch.mit.edu/site-api/explore/projects/" + tag + "/?date=this_month"
+	url := "http://scratch.mit.edu/site-api/explore/projects/" + tag + "/?date=this_month"
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -99,7 +101,8 @@ func GetProjects(tag string) ([]*Project, error) {
 
 		p, err := GetProject(id)
 		if err != nil {
-			return nil, err
+			fmt.Println("WARNING: Could not get project:", id)
+			continue
 		}
 		projects = append(projects, p)
 	}
@@ -107,5 +110,3 @@ func GetProjects(tag string) ([]*Project, error) {
 	return projects, nil
 
 }
-
-//<img src="//cdn2.scratch.mit.edu/get_image/project/86658772_216x163.png?v=1446739374.02" class="image">ck
